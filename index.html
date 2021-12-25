@@ -9,43 +9,65 @@
 </head>
 
 <body>
-    <video id="video" controls playsinline="playsinline" preload="auto"></video>
-    <video id="sound"  playsinline="playsinline" preload="auto"></video>
+    <div id="inputs">
+        <input type="text" placeholder="class link" id="classInput">
+        <input type="button" value="open class" onclick="openClass();" />
+    </div>
+
+    <video id="video" controls></video>
+    <video id="sound"></video>
 </body>
 
 <script>
-    var id;
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const arr = urlParams.get('class').split("/")
-        id = arr[arr.length - 1]
-    } catch (error) {
-        console.log(error)
-    }
-
-    if (id == undefined)
-        document.querySelector("body").innerHTML = "<p>adicione o link da aula na URL</p>"
-
     var video = document.querySelector("#video")
     var sound = document.querySelector("#sound")
 
-    videoUrl = "https://web.virtual.ufc.br/presentation/" + id + "/deskshare/deskshare.mp4"
-    video.setAttribute('src', videoUrl);
-    soundUrl = "https://web.virtual.ufc.br/presentation/" + id + "/video/webcams.mp4"
-    sound.setAttribute('src', soundUrl)
+    function openClass() {
+        let value = document.querySelector("#classInput").value
+        const arr = value.split("/")
+        id = arr[arr.length - 1]
+
+        videoUrl = "https://web.virtual.ufc.br/presentation/" + id + "/deskshare/deskshare.mp4"
+        video.setAttribute('src', videoUrl);
+        soundUrl = "https://web.virtual.ufc.br/presentation/" + id + "/video/webcams.mp4"
+        sound.setAttribute('src', soundUrl)
+    }
+
+    playing = false
+    state = "visible"
+    // keep playing when change tabs
+    document.addEventListener("visibilitychange", function () {
+        setTimeout(() => {
+            state = document.visibilityState
+            console.log("state: " + document.visibilityState)
+        }, 2);
+    });
 
     // play
-    video.addEventListener("play", function () {
-        console.log("play")
-        sound.play()
-        sound.currentTime = video.currentTime
-        sound.playbackRate = video.playbackRate
+    video.addEventListener("play", function (ev) {
+        ev.preventDefault()
+
+        if (state == "visible") {
+            console.log("play")
+            playing = true
+            sound.play()
+            sound.currentTime = video.currentTime
+            sound.playbackRate = video.playbackRate
+        }
+
     }, false);
 
     // pause
-    video.addEventListener("pause", function () {
-        console.log("pause")
-        sound.pause()
+    video.addEventListener("pause", function (ev) {
+        ev.preventDefault()
+        setTimeout(() => {
+            if (state == "visible") {
+                console.log("pause")
+                playing = false
+                sound.pause()
+                video.pause()
+            }
+        }, 1);
     }, false);
 
     // ratechange
@@ -53,13 +75,6 @@
         console.log("rate change")
         sound.playbackRate = video.playbackRate
     }, false);
-
-    // keep playing when change tabs
-    document.addEventListener("visibilitychange", function () {
-        if (document.hidden) {
-            video.play()
-        }
-    });
 </script>
 
 <style>
@@ -72,14 +87,25 @@
     }
 
     #sound {
-        height: 0px;
-        width: 100%;
+        display: none;
     }
 
     #video {
         flex: 1;
         width: 100%;
         border-style: inset;
+    }
+
+    #inputs {
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        padding: 20px;
+        padding-left: 0px;
+    }
+
+    #classInput {
+        flex: 1
     }
 </style>
 
