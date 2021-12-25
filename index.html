@@ -11,7 +11,7 @@
 <body>
     <div id="inputs">
         <input type="text" placeholder="class link" id="classInput">
-        <input type="button" value="open class" onclick="openClass();" />
+        <input type="button" value="open class" onclick="searchHandler();" />
     </div>
 
     <video id="video" controls></video>
@@ -19,22 +19,44 @@
 </body>
 
 <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+
     var video = document.querySelector("#video")
     var sound = document.querySelector("#sound")
 
-    function openClass() {
-        let value = document.querySelector("#classInput").value
-        const arr = value.split("/")
-        id = arr[arr.length - 1]
+    
+    var playing = false
+    var state = "visible"
 
+    // query string
+    try {
+        let value = urlParams.get('class')
+        let arr = value.split("/")
+        let id = arr[arr.length - 1]
+        document.querySelector("#classInput").value = value
+        openClass(id)
+    } catch (error) {
+        console.log(error)
+    }
+
+    function searchHandler(){
+        let value = document.querySelector("#classInput").value
+        let arr = value.split("/")
+        let id = arr[arr.length - 1]
+
+        urlParams.set("class", value);
+        window.location.search = urlParams.toString();
+        openClass(id)
+    }
+
+    function openClass(id) {
         videoUrl = "https://web.virtual.ufc.br/presentation/" + id + "/deskshare/deskshare.mp4"
         video.setAttribute('src', videoUrl);
         soundUrl = "https://web.virtual.ufc.br/presentation/" + id + "/video/webcams.mp4"
         sound.setAttribute('src', soundUrl)
     }
 
-    playing = false
-    state = "visible"
     // keep playing when change tabs
     document.addEventListener("visibilitychange", function () {
         setTimeout(() => {
