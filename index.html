@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Custom Viewer</title>
+</head>
+
+<body>
+    <video id="video" playsinline="playsinline" preload="auto"></video>
+    <video id="sound" controls playsinline="playsinline" preload="auto"
+        data-setup='{ "inactivityTimeout": 0 "}'></video>
+</body>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const arr = urlParams.get('class').split("/")
+    const id = arr[arr.length - 1]
+
+    var video = document.querySelector("#video")
+    var sound = document.querySelector("#sound")
+
+    videoUrl = "https://web.virtual.ufc.br/presentation/" + id + "/deskshare/deskshare.mp4"
+    video.setAttribute('src', videoUrl);
+    soundUrl = "https://web.virtual.ufc.br/presentation/" + id + "/video/webcams.mp4"
+    sound.setAttribute('src', soundUrl)
+
+    // play
+    sound.addEventListener("play", function () {
+        console.log("play")
+        video.play()
+        video.currentTime = sound.currentTime
+    }, false);
+
+    // pause
+    sound.addEventListener("pause", function () {
+        console.log("pause")
+        video.pause()
+    }, false);
+
+    // ratechange
+    sound.addEventListener("ratechange", function () {
+        console.log("rate change")
+        video.playbackRate = sound.playbackRate
+    }, false);
+
+    // video play when back to tab
+    video.addEventListener("play", function () {
+        console.log("video play")
+        video.currentTime = sound.currentTime
+    }, false);
+
+</script>
+
+<style>
+    body {
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+
+    #sound {
+        height: 75px;
+        width: 100%;
+    }
+
+    #video {
+        width: 100%;
+
+    }
+</style>
+
+</html>
