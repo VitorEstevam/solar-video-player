@@ -39,8 +39,8 @@
     document.addEventListener("visibilitychange", function () {
         setTimeout(() => {
             state = document.visibilityState
-            console.log("state: " + document.visibilityState)
-        }, 2);
+            console.log(state)
+        }, 1);
     });
 
     // play
@@ -67,7 +67,7 @@
                 sound.pause()
                 video.pause()
             }
-        }, 1);
+        }, 2);
     }, false);
 
     // ratechange
